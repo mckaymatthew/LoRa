@@ -19,7 +19,8 @@ RH_RF95 rf95;
 // Need this on Arduino Zero with SerialUSB port (eg RocketScream Mini Ultra Pro)
 //#define Serial SerialUSB
 const int voltage_pin =A1;
-#define NUMSAMPLES 200
+#define NUMSAMPLES 40 
+///May be abe to increase NUMSAMPLES to like 50?
 //ADC ~10KHz, 10000 samples = 1 second of data
 
 void setup() 
@@ -72,31 +73,18 @@ void loop()
   //Test start
  for (i=0; i<NUMSAMPLES; i++){
   samples[i] = analogRead(voltage_pin);
-  voltage = samples[i] * (5000.0 / 1024.0); //converts to mv
-   Serial.println(voltage);
-  break;
+  //voltage = samples[i] * (5000.0 / 1024.0); //converts to mv
+  // Serial.println(voltage);
   //delay(10);
  }
 
-  //test end
-  //voltage = output * (5000.0 / 1024.0); //converts to mv
-  float V1 = voltage;
-  VS = String(V1);
-  char result[8];
-  dtostrf(voltage, 6, 2, result);
-//  VS_len = VS.length();
-//  uint8_t VS_len;
- // volt_str = voltage;
   Serial.println("Sending to rf95_server");
-  // Send a message to rf95_server
-  //uint8_t data(voltage[i]);
-// Serial.println(voltage);
-// uint8_t data[] = result;
- //VS.StringToCharArray(voltage,10)
- //uint8_t VS.toCharArray(VS,10);
- //Serial.println(data);
- VS_len = sizeof((uint8_t*) result);
-  rf95.send(result, sizeof(result));
+	//Sending raw ADC sample array.
+	//The recieving end will have to unpack and apply scaling + bais.
+	//Another optimization would be to only send 10 bits per sample, as this is the native arduino ADC sample width
+	//This is currently sending 16 bits per sample, as this is the native arduino int width
+	Serial.println("Sending Array.");
+	rf95.send(samples, sizeof(int) * NUMSAMPLES);
 
 
   
