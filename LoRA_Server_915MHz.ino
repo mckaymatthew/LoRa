@@ -56,9 +56,17 @@ void loop()
     if (rf95.recv(buf, &len))
     {
       digitalWrite(led, HIGH);
+    int * recieveBuffAlias = (int *)buf;
+	//Test start
+	for (i=0; i<NUMSAMPLES; i++){
+		voltage = recieveBuffAlias[i] * (5000.0 / 1024.0); //converts to mv
+		Serial.print(voltage);
+		Serial.print(", ");
+		//delay(10);
+	}
+	Serial.println("\nEnd Of Packet.");
 //      RH_RF95::printBuffer("request: ", buf, len);
 //      Serial.print("got request: ");
-      Serial.println((char*)buf);
 //      Serial.print("RSSI: ");
 //      Serial.println(rf95.lastRssi(), DEC);
       
